@@ -1,15 +1,57 @@
 import { db as dbPromise } from '../database/config.js';
-import { users } from '../database/schema.js';
+import { users, courses } from '../database/schema.js';
 import { eq } from 'drizzle-orm';
 
 export const listStudents = async () => {
   const db = await dbPromise;
-  return await db.select().from(users).where(eq(users.role, 'student'));
+  // Join users with courses to get course info
+  const result = await db
+    .select({
+      id: users.id,
+      fullName: users.fullName,
+      email: users.email,
+      phone: users.phone,
+      role: users.role,
+      profilePicture: users.profilePicture,
+      enrollmentYear: users.enrollmentYear,
+      status: users.status,
+      course: {
+        id: courses.id,
+        name: courses.name,
+        code: courses.code,
+        description: courses.description,
+        credits: courses.credits,
+      },
+    })
+    .from(users)
+    .leftJoin(courses, eq(users.courseId, courses.id))
+    .where(eq(users.role, 'student'));
+  return result;
 };
 
 export const getStudentById = async (id) => {
   const db = await dbPromise;
-  const result = await db.select().from(users).where(eq(users.id, id));
+  const result = await db
+    .select({
+      id: users.id,
+      fullName: users.fullName,
+      email: users.email,
+      phone: users.phone,
+      role: users.role,
+      profilePicture: users.profilePicture,
+      enrollmentYear: users.enrollmentYear,
+      status: users.status,
+      course: {
+        id: courses.id,
+        name: courses.name,
+        code: courses.code,
+        description: courses.description,
+        credits: courses.credits,
+      },
+    })
+    .from(users)
+    .leftJoin(courses, eq(users.courseId, courses.id))
+    .where(eq(users.id, id));
   return result[0];
 };
 
