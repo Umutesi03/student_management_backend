@@ -1,5 +1,5 @@
 import { db as dbPromise } from '../config.js';
-import { users, courses } from '../schema.js';
+import { users } from '../schema.js';
 import bcrypt from 'bcrypt';
 
 const seed = async () => {
@@ -7,37 +7,30 @@ const seed = async () => {
     const db = await dbPromise; 
     const hashed = await bcrypt.hash('admin123', 10);
 
-    const cs = await db.query.courses.findFirst({
-      where: (c) => c.code === 'CS101',
-    });
-    const se = await db.query.courses.findFirst({
-      where: (c) => c.code === 'SE201',
-    });
-
     await db.insert(users).values([
       {
         fullName: 'Admin User',
-        email: 'admin@example.com',
-        phone: '1234567890',
+        email: 'admin@gmail.com',
+        phone: '0792361728',
         password: hashed,
         role: 'admin',
       },
       {
-        fullName: 'Student One',
-        email: 'student1@example.com',
-        phone: '9876543210',
-        password: await bcrypt.hash('student123', 10),
+        fullName: 'Anne MArie',
+        email: 'anne@gmail.com.com',
+        phone: '0792365789',
+        password: await bcrypt.hash('2003', 10),
         role: 'student',
-        courseId: cs?.id,
+        course: 'Computer Science',
         enrollmentYear: 2022,
       },
       {
-        fullName: 'Student Two',
-        email: 'student2@example.com',
-        phone: '8765432109',
+        fullName: 'Uwase Kelline',
+        email: 'uwase@gmail.com.com',
+        phone: '0789456578',
         password: await bcrypt.hash('student123', 10),
         role: 'student',
-        courseId: se?.id,
+        course: 'Software Engineering',
         enrollmentYear: 2023,
       },
     ]);
