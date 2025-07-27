@@ -1,11 +1,18 @@
 import { db as dbPromise } from '../config.js';
-import { users } from '../schema.js';
+import { users, courses } from '../schema.js';
 import bcrypt from 'bcrypt';
 
 const seed = async () => {
   try {
-    const db = await dbPromise; // WAIT for the drizzle connection
+    const db = await dbPromise; 
     const hashed = await bcrypt.hash('admin123', 10);
+
+    const cs = await db.query.courses.findFirst({
+      where: (c) => c.code === 'CS101',
+    });
+    const se = await db.query.courses.findFirst({
+      where: (c) => c.code === 'SE201',
+    });
 
     await db.insert(users).values([
       {
@@ -21,7 +28,7 @@ const seed = async () => {
         phone: '9876543210',
         password: await bcrypt.hash('student123', 10),
         role: 'student',
-        course: 'Computer Science',
+        courseId: cs?.id,
         enrollmentYear: 2022,
       },
       {
@@ -30,7 +37,7 @@ const seed = async () => {
         phone: '8765432109',
         password: await bcrypt.hash('student123', 10),
         role: 'student',
-        course: 'Software Engineering',
+        courseId: se?.id,
         enrollmentYear: 2023,
       },
     ]);
