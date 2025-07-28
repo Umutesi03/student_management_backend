@@ -8,7 +8,8 @@
     "seed": "babel-node src/database/seeds/users.js",
     "migrate": "npx drizzle-kit push --config=drizzle.config.mjs",
     "generate": "npx drizzle-kit generate --config=drizzle.config.mjs",
-    "prettier": "prettier --write '**/*.{js,json}'"
+    "prettier": "prettier --write '**/*.{js,json}'",
+    "build": "npx babel src --out-dir dist --extensions '.js,.mjs' --verbose"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +26,7 @@
     "postgres": "^3.4.7"
   },
   "devDependencies": {
+    "@babel/cli": "^7.28.0",
     "@babel/core": "^7.28.0",
     "@babel/node": "^7.28.0",
     "@babel/preset-env": "^7.28.0",
