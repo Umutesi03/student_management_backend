@@ -1,6 +1,6 @@
 {
-  "id": "0e4a7e9d-818c-47c0-be49-3d5ccef11919",
-  "prevId": "f2a9af20-088e-4dd6-b970-d98f3fe1417f",
+  "id": "62094f44-1dde-4729-a318-6bcf37d9a090",
+  "prevId": "2e0932ba-0cbe-40ec-8f61-473cefcd1c2e",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -139,7 +139,7 @@
           "name": "phone",
           "type": "varchar(20)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "password": {
           "name": "password",
@@ -158,20 +158,22 @@
           "name": "profile_picture",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": null
         },
         "enrollment_year": {
           "name": "enrollment_year",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": null
         },
         "status": {
           "name": "status",
           "type": "varchar(20)",
           "primaryKey": false,
           "notNull": false,
-          "default": "'Active'"
+          "default": null
         },
         "otp": {
           "name": "otp",

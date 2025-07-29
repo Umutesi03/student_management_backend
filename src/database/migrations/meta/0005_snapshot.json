@@ -1,6 +1,6 @@
 {
-  "id": "0e4a7e9d-818c-47c0-be49-3d5ccef11919",
-  "prevId": "f2a9af20-088e-4dd6-b970-d98f3fe1417f",
+  "id": "02dea35e-1d8c-46c2-833c-bc5a5350d255",
+  "prevId": "62094f44-1dde-4729-a318-6bcf37d9a090",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -139,7 +139,7 @@
           "name": "phone",
           "type": "varchar(20)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "password": {
           "name": "password",
@@ -171,7 +171,7 @@
           "type": "varchar(20)",
           "primaryKey": false,
           "notNull": false,
-          "default": "'Active'"
+          "default": null
         },
         "otp": {
           "name": "otp",
