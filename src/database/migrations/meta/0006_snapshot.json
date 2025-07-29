@@ -1,6 +1,6 @@
 {
-  "id": "0e4a7e9d-818c-47c0-be49-3d5ccef11919",
-  "prevId": "f2a9af20-088e-4dd6-b970-d98f3fe1417f",
+  "id": "876342cf-a2ed-4642-ab80-5941b8773dc3",
+  "prevId": "02dea35e-1d8c-46c2-833c-bc5a5350d255",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -139,7 +139,7 @@
           "name": "phone",
           "type": "varchar(20)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "password": {
           "name": "password",
