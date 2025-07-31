@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --exec babel-node app.js",
-    "seed": "babel-node src/database/seeds/users.js",
+    "seed": "babel-node src/database/seeds/users.js && babel-node src/database/seeds/courses.js",
     "migrate": "npx drizzle-kit push --config=drizzle.config.mjs",
     "generate": "npx drizzle-kit generate --config=drizzle.config.mjs",
     "prettier": "prettier --write '**/*.{js,json}'",
