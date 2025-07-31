@@ -7,9 +7,9 @@ const seed = async () => {
     const db = await dbPromise;
     const hashed = await bcrypt.hash('admin123', 10);
 
-    await db.delete(users);
+    // await db.delete(users);
 
-    await db.execute(`ALTER SEQUENCE users_id_seq RESTART WITH 1;`);
+    // await db.execute(`ALTER SEQUENCE users_id_seq RESTART WITH 1;`);
 
     const insertedUsers = await db
       .insert(users)
