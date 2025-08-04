@@ -1,10 +1,11 @@
 import { db as dbPromise } from '../config.js';
 import { courses } from '../schema.js';
+import { eq } from 'drizzle-orm';
 
 const seedCourses = async () => {
   try {
     const db = await dbPromise;
-    await db.insert(courses).values([
+    const courseData = [
       {
         name: 'Computer Science',
         code: 'CS101',
@@ -23,7 +24,21 @@ const seedCourses = async () => {
         description: 'Study of data structures',
         credits: 3,
       },
-    ]);
+    ];
+
+    for (const course of courseData) {
+      const existing = await db
+        .select()
+        .from(courses)
+        .where(eq(courses.code, course.code));
+      if (existing.length === 0) {
+        await db.insert(courses).values(course);
+      } else {
+        console.log(
+          `Course with code ${course.code} already exists, skipping.`
+        );
+      }
+    }
     console.log('✅ Courses seeded successfully.');
     process.exit(0);
   } catch (err) {
