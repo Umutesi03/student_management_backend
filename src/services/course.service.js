@@ -1,6 +1,11 @@
 import { db as dbPromise } from '../database/config.js';
-import { courses, users, studentCourses } from '../database/schema.js';
-import { eq } from 'drizzle-orm';
+import {
+  courses,
+  users,
+  studentCourses,
+  recentActivities,
+} from '../database/schema.js';
+import { eq, and } from 'drizzle-orm';
 
 export const getAllCoursesService = async () => {
   const db = await dbPromise;
@@ -16,6 +21,15 @@ export const getCourseByIdService = async (id) => {
 export const createCourseService = async (data) => {
   const db = await dbPromise;
   const [course] = await db.insert(courses).values(data).returning();
+
+  // Log new course activity
+  await db.insert(recentActivities).values({
+    type: 'new_course_added',
+    description: `New course added: ${course.name}`,
+    courseId: course.id,
+    visibleTo: 'student',
+  });
+
   return course;
 };
 
@@ -40,8 +54,12 @@ export const assignCourseToStudentService = async (studentId, courseId) => {
   const exists = await db
     .select()
     .from(studentCourses)
-    .where(eq(studentCourses.studentId, studentId))
-    .where(eq(studentCourses.courseId, courseId));
+    .where(
+      and(
+        eq(studentCourses.studentId, studentId),
+        eq(studentCourses.courseId, courseId)
+      )
+    );
   if (exists.length > 0) {
     throw new Error('Student already assigned to this course');
   }
@@ -49,6 +67,16 @@ export const assignCourseToStudentService = async (studentId, courseId) => {
     .insert(studentCourses)
     .values({ studentId, courseId })
     .returning();
+
+  // Log course enrollment activity
+  await db.insert(recentActivities).values({
+    userId: studentId,
+    courseId,
+    type: 'course_enrollment',
+    description: `Student enrolled in course ID: ${courseId}`,
+    visibleTo: 'student',
+  });
+
   return assignment;
 };
 

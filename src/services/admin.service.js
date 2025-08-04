@@ -1,5 +1,32 @@
+// Update student info and log activity
+export const updateStudent = async (id, updates) => {
+  const db = await dbPromise;
+  // Exclude 'id' from updates
+  const { id: _id, ...safeUpdates } = updates;
+  const [user] = await db
+    .update(users)
+    .set(safeUpdates)
+    .where(eq(users.id, id))
+    .returning();
+  if (!user) return null;
+
+  // Log profile update activity
+  await db.insert(recentActivities).values({
+    userId: id,
+    type: 'profile_update',
+    description: `Profile updated for student: ${user.fullName}`,
+    visibleTo: 'student',
+  });
+
+  return user;
+};
 import { db as dbPromise } from '../database/config.js';
-import { users, courses, studentCourses } from '../database/schema.js';
+import {
+  users,
+  courses,
+  studentCourses,
+  recentActivities,
+} from '../database/schema.js';
 import { eq } from 'drizzle-orm';
 
 export const listStudents = async () => {
@@ -100,47 +127,8 @@ export const getStudentById = async (id) => {
       });
     }
   }
+
   return user;
-};
-
-export const createStudent = async (userData, courseIds = []) => {
-  const db = await dbPromise;
-
-  const [user] = await db
-    .insert(users)
-    .values({ ...userData, role: 'student' })
-    .returning();
-
-  if (courseIds.length > 0) {
-    await db
-      .insert(studentCourses)
-      .values(courseIds.map((courseId) => ({ studentId: user.id, courseId })));
-  }
-
-  return await getStudentById(user.id);
-};
-
-export const updateStudent = async (id, updates, courseIds = null) => {
-  const db = await dbPromise;
-
-  const [user] = await db
-    .update(users)
-    .set(updates)
-    .where(eq(users.id, id))
-    .returning();
-  if (!user) return null;
-
-  if (Array.isArray(courseIds)) {
-    await db.delete(studentCourses).where(eq(studentCourses.studentId, id));
-
-    if (courseIds.length > 0) {
-      await db
-        .insert(studentCourses)
-        .values(courseIds.map((courseId) => ({ studentId: id, courseId })));
-    }
-  }
-
-  return await getStudentById(id);
 };
 
 export const deleteStudent = async (id) => {
