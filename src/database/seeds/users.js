@@ -1,5 +1,6 @@
 import { db as dbPromise } from '../config.js';
 import { users, courses, studentCourses } from '../schema.js';
+import { eq } from 'drizzle-orm';
 import bcrypt from 'bcrypt';
 
 const seed = async () => {
@@ -11,47 +12,62 @@ const seed = async () => {
 
     // await db.execute(`ALTER SEQUENCE users_id_seq RESTART WITH 1;`);
 
-    const insertedUsers = await db
-      .insert(users)
-      .values([
-        {
-          fullName: 'Admin User',
-          email: 'admin@gmail.com',
-          phone: '0792361728',
-          password: hashed,
-          role: 'admin',
-          enrollmentYear: null,
-          profilePicture: null,
-          status: null,
-          otp: null,
-          otpVerified: 1,
-        },
-        {
-          fullName: 'Anne Marie',
-          email: 'anne@gmail.com',
-          phone: '0792365789',
-          password: await bcrypt.hash('2003', 10),
-          role: 'student',
-          enrollmentYear: 2022,
-          profilePicture: null,
-          status: null,
-          otp: null,
-          otpVerified: 1,
-        },
-        {
-          fullName: 'Uwase Kelline',
-          email: 'uwase@gmail.com',
-          phone: '0789456578',
-          password: await bcrypt.hash('student123', 10),
-          role: 'student',
-          enrollmentYear: 2023,
-          profilePicture: null,
-          status: null,
-          otp: null,
-          otpVerified: 1,
-        },
-      ])
-      .returning({ id: users.id, email: users.email });
+    const userData = [
+      {
+        fullName: 'Admin User',
+        email: 'admin@gmail.com',
+        phone: '0792361728',
+        password: hashed,
+        role: 'admin',
+        enrollmentYear: null,
+        profilePicture: null,
+        status: null,
+        otp: null,
+        otpVerified: 1,
+      },
+      {
+        fullName: 'Anne Marie',
+        email: 'anne@gmail.com',
+        phone: '0792365789',
+        password: await bcrypt.hash('2003', 10),
+        role: 'student',
+        enrollmentYear: 2022,
+        profilePicture: null,
+        status: null,
+        otp: null,
+        otpVerified: 1,
+      },
+      {
+        fullName: 'Uwase Kelline',
+        email: 'uwase@gmail.com',
+        phone: '0789456578',
+        password: await bcrypt.hash('student123', 10),
+        role: 'student',
+        enrollmentYear: 2023,
+        profilePicture: null,
+        status: null,
+        otp: null,
+        otpVerified: 1,
+      },
+    ];
+
+    const insertedUsers = [];
+    for (const user of userData) {
+      const existing = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, user.email));
+      if (existing.length === 0) {
+        const inserted = await db
+          .insert(users)
+          .values(user)
+          .returning({ id: users.id, email: users.email });
+        insertedUsers.push(inserted[0]);
+      } else {
+        console.log(`User with email ${user.email} already exists, skipping.`);
+        insertedUsers.push(existing[0]);
+      }
+    }
 
     const cs = await db.query.courses.findFirst({
       where: (c) => c.code === 'CS101',

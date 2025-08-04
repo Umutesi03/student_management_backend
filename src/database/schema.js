@@ -1,4 +1,25 @@
-import { pgTable, serial, text, varchar, integer } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  serial,
+  text,
+  varchar,
+  integer,
+  timestamp,
+} from 'drizzle-orm/pg-core';
+
+export const recentActivities = pgTable('recent_activities', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id, {
+    onDelete: 'cascade',
+  }),
+  type: varchar('type', { length: 50 }).notNull(),
+  description: text('description').notNull(),
+  courseId: integer('course_id').references(() => courses.id, {
+    onDelete: 'set null',
+  }),
+  createdAt: timestamp('created_at').defaultNow(),
+  visibleTo: varchar('visible_to', { length: 20 }).notNull().default('admin'), // 'admin' or 'student'
+});
 
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
